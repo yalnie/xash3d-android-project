@@ -34,21 +34,11 @@ CFLAGS_OPT_X86_64 += --target=x86_64-linux-android
 endif
 
 NANOGL_PATH := $(APPLICATIONMK_PATH)/src/NanoGL/nanogl
-
 XASH3D_PATH := $(APPLICATIONMK_PATH)/src/Xash3D
-
 HLSDK_PATH  := $(APPLICATIONMK_PATH)/src/hlsdk-xash3d
-
 XASH3D_CONFIG := $(APPLICATIONMK_PATH)/xash3d_config.mk
 
-ifeq ($(XASH_64BIT),1)
-APP_ABI := x86_64 arm64-v8a
-else
 APP_ABI := x86 armeabi-v7a
-endif
-# Use armeabi-v7a-hard to enable hardfloat (r12b and higher ndks dosent support hard float)
-# Mods are built with both ABI support
-# Build both armeabi-v7a-hard and armeabi-v7a supported only for mods, not for engine
 
 APP_MODULES := xash menu client server NanoGL
 ifeq ($(XASH_SDL),1)
