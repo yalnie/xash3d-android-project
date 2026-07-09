@@ -4,6 +4,7 @@
 	<string name="launcher_name" translatable="false">Xash3D</string>
 	<string name="launcher_name_test" translatable="false">Xash3D Test</string>
 	<string name="version_string" translatable="false">v0.19.4</string>
+	<string name="git_revisions"><b>Version information:</b>\n\"<b>nanogl:</b>\" 5c2ebc3 Revert Remove Android.mk\n\"<b>hlsdk-xash3d:</b>\" dec49b4 Revert dlls, cl_dll: Remove CROWBAR_IDLE_ANIM define\n\"<b>xash-extras:</b>\" 0804ede Added gfx/shell/dedicated.tga\n@runner-xs6vzpvo-project-33420624-concurrent-0 13:35:02-01-06-25</string>
 
 	<!-- Generic -->
 	<string name="cancel">Cancel</string>
