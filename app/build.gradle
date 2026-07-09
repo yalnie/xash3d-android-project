@@ -31,11 +31,11 @@ android {
         }
     }
     
-    externalNativeBuild {
-        ndkBuild {
-            path "${project.projectDir}/src/main/jni/Android.mk"
-        }
-    }
+//    externalNativeBuild {
+//        ndkBuild {
+//            path "${project.projectDir}/src/main/jni/Android.mk"
+//        }
+//    }
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
