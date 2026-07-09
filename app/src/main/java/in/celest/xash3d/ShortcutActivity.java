@@ -13,6 +13,10 @@ import java.io.File;
 import java.io.FilenameFilter;
 
 import android.os.*;
+import android.content.pm.ShortcutManager;
+import android.content.pm.ShortcutInfo;
+import android.graphics.drawable.Icon;
+import android.content.ComponentName;
 
 public class ShortcutActivity extends Activity
 {
@@ -59,6 +63,7 @@ public class ShortcutActivity extends Activity
 	{
 		Intent intent = new Intent();
 		intent.setAction("in.celest.xash3d.START");
+		intent.setComponent(new ComponentName(this, "in.celest.xash3d.XashActivity"));
 		if(argv.length() != 0) intent.putExtra("argv",argv.getText().toString());
 		if(pkgname.length() != 0)
 		{
@@ -68,9 +73,6 @@ public class ShortcutActivity extends Activity
 		if(gamedir.length() != 0) intent.putExtra("gamedir",gamedir.getText().toString());
 		if(env != null)
 			 intent.putExtra("env", env);
-		Intent wrapIntent = new Intent();
-		wrapIntent.putExtra(Intent.EXTRA_SHORTCUT_INTENT, intent);
-		wrapIntent.putExtra(Intent.EXTRA_SHORTCUT_NAME, name.getText().toString());
 
 		Bitmap icon = null;
 		// Try find icon
@@ -110,22 +112,40 @@ public class ShortcutActivity extends Activity
 			// Android may not support ico loading, so fallback if something going wrong
 			icon = BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher);
 		}
-		wrapIntent.putExtra(Intent.EXTRA_SHORTCUT_ICON, icon);
-		if(getIntent().getAction() == "android.intent.action.CREATE_SHORTCUT" ) // Called from launcher
-		{
-			setResult(RESULT_OK, wrapIntent);
-			finish();
-		}
-		else try
-		{
-			wrapIntent.setAction("com.android.launcher.action.INSTALL_SHORTCUT");
-			getApplicationContext().sendBroadcast(wrapIntent);
-			Toast.makeText(getApplicationContext(), "Shortcut created!", Toast.LENGTH_SHORT).show();
-		}
-		catch(Exception e)
-		{
-			Toast.makeText(getApplicationContext(), "Problem creating shortcut: " + e.toString() +
-				"\nTry create it manually from laucnher", Toast.LENGTH_LONG).show();
+
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
+			ShortcutManager shortcutManager = getSystemService(ShortcutManager.class);
+			if (shortcutManager.isRequestPinShortcutSupported()) {
+				ShortcutInfo pinShortcutInfo = new ShortcutInfo.Builder(this, "id_" + name.getText().toString())
+						.setShortLabel(name.getText().toString())
+						.setIcon(Icon.createWithBitmap(icon))
+						.setIntent(intent)
+						.build();
+				shortcutManager.requestPinShortcut(pinShortcutInfo, null);
+				finish();
+			}
+		} else {
+			Intent wrapIntent = new Intent();
+			wrapIntent.putExtra(Intent.EXTRA_SHORTCUT_INTENT, intent);
+			wrapIntent.putExtra(Intent.EXTRA_SHORTCUT_NAME, name.getText().toString());
+			wrapIntent.putExtra(Intent.EXTRA_SHORTCUT_ICON, icon);
+			
+			if(getIntent().getAction() == "android.intent.action.CREATE_SHORTCUT" ) 
+			{
+				setResult(RESULT_OK, wrapIntent);
+				finish();
+			}
+			else try
+			{
+				wrapIntent.setAction("com.android.launcher.action.INSTALL_SHORTCUT");
+				getApplicationContext().sendBroadcast(wrapIntent);
+				Toast.makeText(getApplicationContext(), "Shortcut created!", Toast.LENGTH_SHORT).show();
+			}
+			catch(Exception e)
+			{
+				Toast.makeText(getApplicationContext(), "Problem creating shortcut: " + e.toString() +
+					"\nTry create it manually from laucnher", Toast.LENGTH_LONG).show();
+			}
 		}
 	}
 }
