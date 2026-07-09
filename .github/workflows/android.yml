@@ -30,20 +30,14 @@ jobs:
       with:
         ndk-version: '25.2.9519653'
 
-    - name: Grant execute permission for gradlew
-      run: |
-        if [ -f gradlew ]; then
-          chmod +x gradlew
-        else
-          gradle wrapper --gradle-version 8.2.2
-          chmod +x gradlew
-        fi
-
-    - name: Build with gradle
-      run: ./gradlew assembleDebug --stacktrace
+    - name: Setup and Build with Gradle
+      uses: gradle/actions/setup-gradle@v3
+      with:
+        gradle-version: 8.2.2
+        arguments: assembleDebug --stacktrace
 
     - name: Upload debug apk
       uses: actions/upload-artifact@v4
       with:
-        name: androif
+        name: android
         path: app/build/outputs/apk/debug/app-debug.apk
