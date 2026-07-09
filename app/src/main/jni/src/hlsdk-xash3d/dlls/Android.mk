@@ -9,16 +9,12 @@ LOCAL_MODULE := server
 
 include $(XASH3D_CONFIG)
 
-ifeq ($(TARGET_ARCH_ABI),armeabi-v7a-hard)
-LOCAL_MODULE_FILENAME = libserver_hardfp
-endif
-
 LOCAL_CFLAGS += -D_LINUX -DCLIENT_WEAPONS -Dstricmp=strcasecmp -Dstrnicmp=strncasecmp -D_snprintf=snprintf \
 	-fno-exceptions -DNO_VOICEGAMEMGR -w
 
 LOCAL_CPPFLAGS := $(LOCAL_CFLAGS)
 
-LOCAL_C_INCLUDES := $(SDL_PATH)/include \
+LOCAL_C_INCLUDES := $(LOCAL_PATH)/../../SDL/include \
 		    $(LOCAL_PATH)/. \
 		    $(LOCAL_PATH)/wpn_shared \
 		    $(LOCAL_PATH)/../common \
@@ -129,7 +125,6 @@ LOCAL_SRC_FILES := agrunt.cpp airtank.cpp \
 	   ../pm_shared/pm_debug.c \
 	   ../pm_shared/pm_math.c \
 	   ../pm_shared/pm_shared.c
-#	   ../game_shared/voice_gamemgr.cpp
 
 LOCAL_LDLIBS := -llog
 
