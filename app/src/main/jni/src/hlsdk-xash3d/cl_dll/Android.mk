@@ -6,19 +6,9 @@ LOCAL_PATH := $(call my-dir)
 include $(CLEAR_VARS)
 
 LOCAL_MODULE := client
-#ifeq ($(XASH_SDL),1)
-#APP_PLATFORM := android-12
-#LOCAL_SHARED_LIBRARIES += SDL2 
-#LOCAL_CFLAGS += -DXASH_SDL
-#else
-APP_PLATFORM := android-8
-#endif
+APP_PLATFORM := android-17
 
 include $(XASH3D_CONFIG)
-
-ifeq ($(TARGET_ARCH_ABI),armeabi-v7a-hard)
-LOCAL_MODULE_FILENAME = libclient_hardfp
-endif
 
 LOCAL_CFLAGS += -DCLIENT_DLL=1
 
@@ -43,8 +33,6 @@ SRCS+=../dlls/shotgun.cpp
 SRCS+=../dlls/squeakgrenade.cpp
 SRCS+=../dlls/tripmine.cpp
 SRCS+=../dlls/glock.cpp
-#SRCS+=../game_shared/voice_banmgr.cpp
-#SRCS+=../game_shared/voice_status.cpp
 SRCS+=./ammo.cpp
 SRCS+=./ammo_secondary.cpp
 SRCS+=./ammohistory.cpp
@@ -63,7 +51,6 @@ SRCS+=./health.cpp
 SRCS+=./hud.cpp
 SRCS+=./hud_msg.cpp
 SRCS+=./hud_redraw.cpp
-#SRCS+=./hud_servers.cpp
 SRCS+=./hud_spectator.cpp
 SRCS+=./hud_update.cpp
 SRCS+=./in_camera.cpp
@@ -71,7 +58,6 @@ SRCS+=./input.cpp
 SRCS+=./input_goldsource.cpp
 SRCS+=./input_mouse.cpp
 SRCS+=./interpolation.cpp
-#SRCS+=./inputw32.cpp
 SRCS+=./menu.cpp
 SRCS+=./message.cpp
 SRCS+=./parsemsg.cpp
@@ -91,8 +77,6 @@ SRCS+=./view.cpp
 SRCS+=./input_xash3d.cpp
 SRCS+=./scoreboard.cpp
 SRCS+=./MOTD.cpp
-INCLUDES =  -I../common -I. -I../game_shared -I../pm_shared -I../engine -I../dlls -I../utils/false_vgui/include
-DEFINES = -Wno-write-strings -DLINUX -D_LINUX -Dstricmp=strcasecmp -Dstrnicmp=strncasecmp -DCLIENT_WEAPONS -DCLIENT_DLL -w -D_snprintf=snprintf
 
 LOCAL_C_INCLUDES := $(LOCAL_PATH)/. \
 		 $(LOCAL_PATH)/../common \
@@ -102,15 +86,18 @@ LOCAL_C_INCLUDES := $(LOCAL_PATH)/. \
 		 $(LOCAL_PATH)/../public \
 		 $(LOCAL_PATH)/../pm_shared \
 		 $(LOCAL_PATH)/../utils/false_vgui/include
-LOCAL_CFLAGS += $(DEFINES) $(INCLUDES)
+
+LOCAL_CFLAGS += -Wno-write-strings -DLINUX -D_LINUX -Dstricmp=strcasecmp -D_snprintf=snprintf -Dstrnicmp=strcasecmp -DCLIENT_WEAPONS -DCLIENT_DLL -w
 
 ifeq ($(GOLDSOURCE_SUPPORT),1)
-	DEFINES += -DGOLDSOURCE_SUPPORT
+	LOCAL_CFLAGS += -DGOLDSOURCE_SUPPORT
 	ifeq ($(shell uname -s),Linux)
 		LOCAL_LDLIBS += -ldl
 	endif
 endif
 
 LOCAL_SRC_FILES := $(SRCS) $(SRCS_C)
+
+LOCAL_LDLIBS += -llog
 
 include $(BUILD_SHARED_LIBRARY)
