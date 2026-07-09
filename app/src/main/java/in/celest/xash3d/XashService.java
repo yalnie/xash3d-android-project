@@ -95,7 +95,11 @@ public class XashService extends Service
 		notification.contentIntent = PendingIntent.getActivity(getApplicationContext(), 0, engineIntent, pendingFlags);
 		notification.flags |= Notification.FLAG_ONGOING_EVENT | Notification.FLAG_FOREGROUND_SERVICE;
 		
-		startForeground(100, notification);
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+			startForeground(100, notification, android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE);
+		} else {
+			startForeground(100, notification);
+		}
 		
 		return START_NOT_STICKY;
 	}
