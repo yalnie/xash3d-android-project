@@ -17,6 +17,7 @@ import android.view.*;
 import android.widget.*;
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.provider.Settings;
 
 import in.celest.xash3d.hl.*;
 import java.io.*;
@@ -74,6 +75,13 @@ public class LauncherActivity extends Activity
 
 	public void applyPermissions( final String[] permissions, final int code )
 	{
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+			if (!Environment.isExternalStorageManager()) {
+				showAllFilesAccessDialog();
+				return;
+			}
+		}
+
 		List< String > requestPermissions = new ArrayList<>();
 		for( String permission : permissions )
 		{
@@ -88,6 +96,28 @@ public class LauncherActivity extends Activity
 				requestPermissionsArray[ i ] = requestPermissions.get( i );
 			requestPermissions( requestPermissionsArray, code );
 		}
+	}
+
+	private void showAllFilesAccessDialog() {
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setTitle("All-files access required");
+		builder.setMessage("All-files access is required for the app to function properly.");
+		builder.setPositiveButton("Open settings", new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				Intent intent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
+				intent.setData(Uri.parse("package:" + getPackageName()));
+				startActivity(intent);
+			}
+		});
+		builder.setNegativeButton("Exit", new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				finish();
+			}
+		});
+		builder.setCancelable(false);
+		builder.show();
 	}
 
     @Override
@@ -569,12 +599,6 @@ public class LauncherActivity extends Activity
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        /*if (id == R.id.action_settings) {
-            return true;
-        }*/
-
         return super.onOptionsItemSelected(item);
     }
 }
