@@ -40,7 +40,7 @@ XASH3D_CONFIG := $(APPLICATIONMK_PATH)/xash3d_config.mk
 
 APP_ABI := x86 armeabi-v7a
 
-APP_MODULES := xash menu client server NanoGL
+APP_MODULES := xash3d menu client server NanoGL
 ifeq ($(XASH_SDL),1)
 	APP_MODULES += SDL2
 endif
