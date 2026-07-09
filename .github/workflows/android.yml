@@ -1,0 +1,49 @@
+name: Android CI
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
+        fetch-depth: 0
+
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        cache: 'gradle'
+
+    - name: Setup android ndk
+      uses: android-actions/setup-android@v3
+      with:
+        ndk-version: '25.2.9519653'
+
+    - name: Grant execute permission for gradlew
+      run: |
+        if [ -f gradlew ]; then
+          chmod +x gradlew
+        else
+          gradle wrapper --gradle-version 8.2.2
+          chmod +x gradlew
+        fi
+
+    - name: Build with gradle
+      run: ./gradlew assembleDebug --stacktrace
+
+    - name: Upload debug apk
+      uses: actions/upload-artifact@v4
+      with:
+        name: androif
+        path: app/build/outputs/apk/debug/app-debug.apk
