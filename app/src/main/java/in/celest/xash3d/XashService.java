@@ -78,7 +78,13 @@ public class XashService extends Service
 		engineIntent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
 		
 		Intent exitIntent = new Intent(this, exitButtonListener.class);
-		final PendingIntent pendingExitIntent = PendingIntent.getBroadcast(this, 0, exitIntent, 0);
+		
+		int pendingFlags = PendingIntent.FLAG_UPDATE_CURRENT;
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+			pendingFlags |= PendingIntent.FLAG_IMMUTABLE;
+		}
+		
+		final PendingIntent pendingExitIntent = PendingIntent.getBroadcast(this, 0, exitIntent, pendingFlags);
 		
 		notification = new Notification(R.drawable.ic_statusbar, "Xash3D", System.currentTimeMillis());
 
@@ -86,7 +92,7 @@ public class XashService extends Service
 		notification.contentView.setTextViewText(status_text, "Xash3D Engine");
 		notification.contentView.setOnClickPendingIntent(status_exit_button, pendingExitIntent);
 
-		notification.contentIntent = PendingIntent.getActivity(getApplicationContext(), 0, engineIntent, 0);
+		notification.contentIntent = PendingIntent.getActivity(getApplicationContext(), 0, engineIntent, pendingFlags);
 		notification.flags |= Notification.FLAG_ONGOING_EVENT | Notification.FLAG_FOREGROUND_SERVICE;
 		
 		startForeground(100, notification);
