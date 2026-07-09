@@ -38,6 +38,7 @@ public class XashService extends Service
 	public static Notification notification;
 	public static int status_image = R.id.status_image;
 	public static int status_text = R.id.status_text;
+	private static final String CHANNEL_ID = "xash3d_service_channel";
 
 	@Override
 	public IBinder onBind(Intent intent) 
@@ -86,14 +87,30 @@ public class XashService extends Service
 		
 		final PendingIntent pendingExitIntent = PendingIntent.getBroadcast(this, 0, exitIntent, pendingFlags);
 		
-		notification = new Notification(R.drawable.ic_statusbar, "Xash3D", System.currentTimeMillis());
-
-		notification.contentView = new RemoteViews(getApplicationContext().getPackageName(),  notify);
-		notification.contentView.setTextViewText(status_text, "Xash3D Engine");
-		notification.contentView.setOnClickPendingIntent(status_exit_button, pendingExitIntent);
-
-		notification.contentIntent = PendingIntent.getActivity(getApplicationContext(), 0, engineIntent, pendingFlags);
-		notification.flags |= Notification.FLAG_ONGOING_EVENT | Notification.FLAG_FOREGROUND_SERVICE;
+		NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+		
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+			NotificationChannel channel = new NotificationChannel(CHANNEL_ID, "Xash3D Engine", NotificationManager.IMPORTANCE_LOW);
+			manager.createNotificationChannel(channel);
+		}
+		
+		Notification.Builder builder;
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+			builder = new Notification.Builder(this, CHANNEL_ID);
+		} else {
+			builder = new Notification.Builder(this);
+		}
+		
+		RemoteViews contentView = new RemoteViews(getApplicationContext().getPackageName(), notify);
+		contentView.setTextViewText(status_text, "Xash3D Engine");
+		contentView.setOnClickPendingIntent(status_exit_button, pendingExitIntent);
+		
+		notification = builder
+			.setSmallIcon(R.drawable.ic_statusbar)
+			.setContent(contentView)
+			.setContentIntent(PendingIntent.getActivity(getApplicationContext(), 0, engineIntent, pendingFlags))
+			.setOngoing(true)
+			.build();
 		
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
 			startForeground(100, notification, android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE);
